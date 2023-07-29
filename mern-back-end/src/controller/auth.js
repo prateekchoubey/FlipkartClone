@@ -1,15 +1,12 @@
-const User = require('../models/user');
-const jwt = require('jsonwebtoken');
-const {validationResult} = require('express-validator');
+const User = require("../models/user");
+const jwt = require("jsonwebtoken");
+const { validationResult } = require("express-validator");
 
 exports.signup = (req, res) => {
-
-
-
   User.findOne({ email: req.body.email }).exec((error, user) => {
     if (user) {
       return res.status(400).json({
-        message: 'User already registered'
+        message: "User already registered",
       });
     }
 
@@ -19,20 +16,20 @@ exports.signup = (req, res) => {
       firstName,
       lastName,
       email,
-      password
+      password,
     });
 
     _user.save((error, data) => {
       if (error) {
         return res.status(400).json({
-          message: 'User registration failed',
-          error: error
+          message: "User registration failed",
+          error: error,
         });
       }
 
       if (data) {
         return res.status(201).json({
-          message: 'User registration successful'
+          message: "User registration successful",
         });
       }
     });
@@ -40,19 +37,21 @@ exports.signup = (req, res) => {
 };
 
 exports.signin = (req, res) => {
-  User.findOne({ email: req.body.email })
-  .exec((error, user) => {
+  User.findOne({ email: req.body.email }).exec((error, user) => {
     if (error) {
       return res.status(400).json({ error });
     }
-    if(user)
-    {
-      if (user.authenticate(req.body.password) && user.role == 'user') {
-        const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-          expiresIn: '1h'
-        });
-  
-        const { _id,firstName, lastName, email, role, fullName } = user;
+    if (user) {
+      if (user.authenticate(req.body.password) && user.role == "user") {
+        const token = jwt.sign(
+          { _id: user._id, role: user.role },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "1h",
+          }
+        );
+
+        const { _id, firstName, lastName, email, role, fullName } = user;
         return res.status(200).json({
           token,
           user: {
@@ -61,18 +60,14 @@ exports.signin = (req, res) => {
             lastName,
             email,
             role,
-            fullName
-          }
+            fullName,
+          },
         });
-    }
-   
+      }
     } else {
       return res.status(400).json({
-        message: 'Invalid Password'
+        message: "Invalid Password",
       });
     }
   });
 };
-
-
-
