@@ -3,8 +3,8 @@ const { requireSignin, adminMiddleware } = require("../common-middleware");
 const { createProduct } = require("../controller/product");
 const multer = require("multer");
 const shortid = require("shortid");
-const path = require("path");
 const router = express.Router();
+const path = require("path");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
